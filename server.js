@@ -3,30 +3,37 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 dotenv.config();
+
 const authRoutes = require('./src/Router/AuthRouter');
 const postRoutes = require('./src/Router/PostRouter');
-const comment = require('./src/Router/CommentRout');
- const dashboard = require('./src/Router/DashboardRout')
- const visitor = require('./src/Router/VisitorRout')
+const commentRoutes = require('./src/Router/CommentRout');
+const dashboardRoutes = require('./src/Router/DashboardRout');
+const visitorRoutes = require('./src/Router/VisitorRout');
+
 const app = express();
+
+// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
+
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
-app.use("/api/comment",comment);
-app.use("/api/visitor",visitor);
-app.use("/api/dashboard",dashboard);
+app.use('/api/comment', commentRoutes);
+app.use('/api/visitor', visitorRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
-app.get('/',(req,res)=>{
-  res.send("server start")
+app.get('/', (req, res) => {
+  res.send("Server started successfully!");
+});
 
-})
-
-mongoose.connect(process.env.MONGO_URI)
+// Mongo + Server Start
+const PORT = process.env.PORT || 5000;
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    console.log('MongoDB connected');
-    app.listen( 5000, () => console.log('Server running'));
+    console.log("MongoDB Connected");
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
   })
-  .catch((err) => console.error(err));
+  .catch((err) => console.error("Mongo error: ", err));
